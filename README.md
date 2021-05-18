@@ -3,6 +3,7 @@
 ## TOC
 1. [About](#about)
     - [Built With](#built-with)
+    - [Directory structure](#directory-structure)
 2. [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
     - [Installation](#installation)
@@ -11,10 +12,28 @@
 5. [Contact](#contact)
 
 ## About
-Create standard cloud platform with Terraform.
+Create standard cloud platform.
 
 ### Built With
 - [Terraform](https://www.terraform.io/)
+
+### Directory Structure
+```
+├── LICENSE
+├── README.md
+└── terraform
+    ├── components
+    │   └── network
+    │       ├── main.tf
+    │       ├── outputs.tf
+    │       └── variables.tf
+    └── modules
+        └── module1
+            ├── README.md
+            ├── main.tf
+            ├── outputs.tf
+            └── variables.tf
+```
 
 ## Getting Started
 ### Prerequisites
