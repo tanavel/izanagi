@@ -49,9 +49,17 @@ Create standard cloud platform.
   ```
 
 ## Usage
+### Create S3 backend
+```
+aws --profile terraform s3 mb s3://tanavel-tf-state
+```
+
+### Execute terraform
 - Execute terraform
   ```
   cd {target_component_dir}
+  terraform init
+  terraform workspace new prd
   terraform apply
   ```
 
