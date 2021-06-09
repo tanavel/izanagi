@@ -1,4 +1,12 @@
 terraform {
+  backend "s3" {
+    region               = "ap-northeast-1"
+    profile              = "terraform"
+    bucket               = "tanavel-tf-state"
+    workspace_key_prefix = "data"
+    key                  = "terraform.tfstate"
+  }
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
