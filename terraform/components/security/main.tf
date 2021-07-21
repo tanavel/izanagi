@@ -36,6 +36,48 @@ data "terraform_remote_state" "network" {
 }
 
 #================================================#
+# IAM Role
+#================================================#
+resource "aws_iam_role" "ecs_instance" {
+  # Required
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "",
+        Effect = "Allow",
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      },
+    ]
+  })
+  # Optional
+  name = "tanavel-prd-ecs-instance-role"
+  tags = {
+    Name = "tanavel-prd-ecs-instance-role"
+    Env  = "prd"
+    Sys  = "tanavel"
+  }
+}
+
+resource "aws_iam_instance_profile" "ecs_instance" {
+  name = "tanavel-prd-ecs-instance-role"
+  role = aws_iam_role.ecs_instance.name
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_instance_ssm" {
+  role       = aws_iam_role.ecs_instance.id
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_instance_ecs" {
+  role       = aws_iam_role.ecs_instance.id
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+}
+
+#================================================#
 # Service Linked Role
 #================================================#
 resource "aws_iam_service_linked_role" "ecs" {
