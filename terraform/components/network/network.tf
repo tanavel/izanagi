@@ -1,36 +1,10 @@
-terraform {
-  backend "s3" {
-    region               = "ap-northeast-1"
-    profile              = "terraform"
-    bucket               = "tanavel-tf-state"
-    workspace_key_prefix = "network"
-    key                  = "terraform.tfstate"
-  }
-
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = ">= 3.27"
-    }
-  }
-
-  required_version = ">= 0.14.9"
-}
-
-provider "aws" {
-  profile = "terraform"
-  region  = "ap-northeast-1"
-}
-
 #================================================#
 # Internet Gateway
 #================================================#
 resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.this.id
   tags = {
-    Name = "tanavel-prd-igw"
-    Env  = "prd"
-    Sys  = "tanavel"
+    Name = "${var.sys}-${terraform.workspace}-igw"
   }
 }
 
@@ -41,9 +15,7 @@ resource "aws_vpc" "this" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
   tags = {
-    Name = "tanavel-prd-vpc"
-    Env  = "prd"
-    Sys  = "tanavel"
+    Name = "${var.sys}-${terraform.workspace}-vpc"
   }
 }
 
@@ -56,9 +28,7 @@ resource "aws_subnet" "public_1" {
   map_public_ip_on_launch = true
   availability_zone       = "ap-northeast-1a"
   tags = {
-    Name = "tanavel-prd-public-subnet-1"
-    Env  = "prd"
-    Sys  = "tanavel"
+    Name = "${var.sys}-${terraform.workspace}-public-subnet-1"
   }
 }
 
@@ -68,9 +38,7 @@ resource "aws_subnet" "public_2" {
   map_public_ip_on_launch = true
   availability_zone       = "ap-northeast-1c"
   tags = {
-    Name = "tanavel-prd-public-subnet-2"
-    Env  = "prd"
-    Sys  = "tanavel"
+    Name = "${var.sys}-${terraform.workspace}-public-subnet-2"
   }
 }
 
@@ -80,9 +48,7 @@ resource "aws_subnet" "public_3" {
   map_public_ip_on_launch = true
   availability_zone       = "ap-northeast-1d"
   tags = {
-    Name = "tanavel-prd-public-subnet-3"
-    Env  = "prd"
-    Sys  = "tanavel"
+    Name = "${var.sys}-${terraform.workspace}-public-subnet-3"
   }
 }
 
@@ -94,9 +60,7 @@ resource "aws_subnet" "private_1" {
   cidr_block        = "10.0.3.0/24"
   availability_zone = "ap-northeast-1a"
   tags = {
-    Name = "tanavel-prd-private-subnet-1"
-    Env  = "prd"
-    Sys  = "tanavel"
+    Name = "${var.sys}-${terraform.workspace}-private-subnet-1"
   }
 }
 
@@ -105,9 +69,7 @@ resource "aws_subnet" "private_2" {
   cidr_block        = "10.0.4.0/24"
   availability_zone = "ap-northeast-1c"
   tags = {
-    Name = "tanavel-prd-private-subnet-2"
-    Env  = "prd"
-    Sys  = "tanavel"
+    Name = "${var.sys}-${terraform.workspace}-private-subnet-2"
   }
 }
 
@@ -116,9 +78,7 @@ resource "aws_subnet" "private_3" {
   cidr_block        = "10.0.5.0/24"
   availability_zone = "ap-northeast-1d"
   tags = {
-    Name = "tanavel-prd-private-subnet-3"
-    Env  = "prd"
-    Sys  = "tanavel"
+    Name = "${var.sys}-${terraform.workspace}-private-subnet-3"
   }
 }
 
@@ -128,9 +88,7 @@ resource "aws_subnet" "private_3" {
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.this.id
   tags = {
-    Name = "tanavel-prd-public-route-table"
-    Env  = "prd"
-    Sys  = "tanavel"
+    Name = "${var.sys}-${terraform.workspace}-public-route-table"
   }
 }
 
@@ -157,13 +115,15 @@ resource "aws_route_table_association" "public_3" {
 
 #================================================#
 # Route Table(Private)
+#
+# NOTE:
+# - 本来はNAT Gateway経由でインターネットアクセスしたい
+# - しかし、NGWは高いのでIGWを通すようにしている
 #================================================#
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.this.id
   tags = {
-    Name = "tanavel-prd-private-route-table"
-    Env  = "prd"
-    Sys  = "tanavel"
+    Name = "${var.sys}-${terraform.workspace}-private-route-table"
   }
 }
 
