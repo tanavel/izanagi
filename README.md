@@ -12,7 +12,7 @@
 5. [Contact](#contact)
 
 ## About
-Create standard cloud platform.
+Create standard web application platform.
 
 ### Built With
 - [Terraform](https://www.terraform.io/)
@@ -37,9 +37,14 @@ Create standard cloud platform.
 
 ## Getting Started
 ### Prerequisites
-- terraform
+- Terraform >= 1.1.3
   ```
   brew install terraform
+  ```
+
+- AWS cli >= 2.4.9
+  ```
+  brew install awscli
   ```
 
 ### Installation
@@ -50,18 +55,55 @@ Create standard cloud platform.
 
 ## Usage
 ### Create S3 backend
-```
-aws --profile terraform s3 mb s3://tanavel-tf-state
-```
+- Create S3 backend
+  ```
+  aws --profile {{ AWS_PROFILE }} --region us-east-1 s3api create-bucket
+    --bucket {{ S3_BUCKET_NAME }} \
+    --create-bucket-configuration '{
+      "LocationConstraint": "{{ AWS_REGION }}"
+    }'
+  ```
+
+- Put S3 bucket protect rules
+  ```
+  aws --profile {{ AWS_PROFILE }} --region us-east-1 s3api put-public-access-block \
+    --bucket {{ S3_BUCKET_NAME }} \
+    --public-access-block-configuration '{
+      "BlockPublicAcls": true,
+      "IgnorePublicAcls": true,
+      "BlockPublicPolicy": true,
+      "RestrictPublicBuckets": true
+  }'
+  ```
 
 ### Execute terraform
-- Execute terraform
+- Move target component directory
   ```
-  cd {target_component_dir}
-  terraform init
-  terraform workspace new prd
+  cd {{ TARGET_COMPONENT_DIR }}
+  ```
+
+- Export default credential and region
+  ```
+  export AWS_PROFILE={{ AWS_PROFILE }}
+  export AWS_REGION={{ AWS_REGION }}
+  ```
+
+- Init component
+  ```
+  terraform init -backend-config "bucket={{ S3_BUCKET_NAME }}"
+  ```
+
+- Create (or Select) env
+  ```
+  terraform workspace new {{ ENV }}
+  # if already created
+  terraform workspace select {{ ENV }}
+  ```
+
+- Execute terraform apply
+  ```
   terraform apply
   ```
 
 ## Contact
-tanavel - [@tanavel1118](https://twitter.com/tanavel1118) - tanavel1118@gmail.com
+tanavel - [@tanavel1118](https://twitter.com/T4n4V3l) - tanavel1118@gmail.com
