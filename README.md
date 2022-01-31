@@ -73,7 +73,16 @@ Create standard web application platform.
       "IgnorePublicAcls": true,
       "BlockPublicPolicy": true,
       "RestrictPublicBuckets": true
-  }'
+    }'
+  ```
+
+- Enable bucket versioning
+  ```
+  aws --profile {{ AWS_PROFILE }} --region us-east-1 s3api put-bucket-versioning \
+    --bucket {{ S3_BUCKET_NAME }} \
+    --versioning-configuration '{
+      "Status": "Enabled"
+    }'
   ```
 
 ### Execute terraform
